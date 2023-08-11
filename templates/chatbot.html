@@ -101,32 +101,59 @@
 	</form>
 </div>
 
-</script>
+<script>
 	const messagesList = document.querySelector('.messages-list');
 	const messageForm = document.querySelector('.message-form');
 	const messageInput = document.querySelector('.message-input');
 
 	messageForm.addEventListener('submit', (event) => {
-	event.preventDefault(); <!-- prevents page refreshing afer submit -->
+		event.preventDefault(); <!-- prevents page refreshing afer submit -->
 
-	const message = messageInput.value.trim();
-	if (message.length === 0) {
-		return;
-	}
+		const message = messageInput.value.trim();
+		if (message.length === 0) {
+			return;
+		}
 
-	const messageItem = document.createElement('li');
-	messageItem.classList.add('message', 'sent');
-	messageItem.innerHTML = `
-	<div class="message-text">
-		<div class="message-sender">
-			<b>You</b>
-		</div>
-		<div class="message-content">
-			${message}
+		const messageItem = document.createElement('li');
+		messageItem.classList.add('message', 'sent');
+		messageItem.innerHTML = `
+		<div class="message-text">
+			<div class="message-sender">
+				<b>You</b>
+			</div>
+			<div class="message-content">
+				${message}
+			</div>
 		</div>`;
-	</div>
-	messagesList.appendChild(messageItem);
-	messageInput.value = ''; <!-- when you hit enter the text box clears -->
-	})
+		messagesList.appendChild(messageItem);
+		messageInput.value = ''; // when you hit enter the text box clears
+
+		fetch('', {   // fetch is a func to send msg to BE ie '' homepage
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams({
+				'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+				'message': message // used in views.py to get the message
+			})
+		})
+			// stores the response in the var response
+			.then(response => response.json()) // convert to json for JS to understand
+			.then(data => {
+				const response = data.response;
+				// creates a new message item so that it pops up in the list
+				const messageItem = document.createElement('li');
+				messageItem.classList.add('message', 'received');
+				messageItem.innerHTML = `
+				<div class="message-text">
+					<div class="message-sender">
+						<b>AI Chatbot</b>
+					</div>
+					<div class="message-content">
+						${response}
+					</div>
+				</div> `;
+				messagesList.appendChild(messageItem); // append it to message item
+			});
+	});
 </script>
 {% endblock %}
