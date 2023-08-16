@@ -2,121 +2,128 @@
 
 {% block styles %}
 <style>
-	body,
-	html {
-		height: 100%;
-	}
+  body,
+  html {
+    height: 100%;
+  }
 
-	.messages-box {
-		flex: 1;
-		overflow-y: auto;
-	}
+  .messages-box {
+    flex: 1;
+    overflow-y: auto;
+  }
 
-	.messages-list {
-		padding-left: 0;
-	}
+  .messages-list {
+    padding-left: 0;
+  }
 
-	.message {
-		margin-bottom: 15px;
-		list-style: none;
-	}
+  .message {
+    margin-bottom: 15px;
+    list-style: none;
+  }
 
-	.message-text {
-		padding: 10px;
-		border-radius: 5px;
-	}
+  .message-text {
+    padding: 10px;
+    border-radius: 5px;
+  }
 
-	.sent {
-		background-color: #dcf8c6;
-		align-self: flex-end;
-	}
+  .sent {
+    background-color: #dcf8c6;
+    align-self: flex-end;
+  }
 
-	.received {
-		background-color: #f1f0f0;
-		align-self: flex-start;
-	}
+  .received {
+    background-color: #f1f0f0;
+    align-self: flex-start;
+  }
 
-	.message-form {
-		display: flex;
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		padding: 10px;
-		background-color: #f8f9fa;
-	}
+  .message-form {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+  }
 
-	.message-input {
-		flex: 1;
-		border-radius: 0;
-		border-right: none;
-	}
+  .message-input {
+    flex: 1;
+    border-radius: 0;
+    border-right: none;
+  }
 
-	.btn-send {
-		border-radius: 0;
-	}
+  .btn-send {
+    border-radius: 0;
+  }
 
-	.chat-container {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
+  .chat-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 {% endblock %}
 
 
 {% block content %}
 <div class="chat-container">
-	<div class="card flex-grow-1">
-		<div class="card-header bg-primary text-white">Chat</div>
-		<div class="card-body messages-box">
+  <div class="card flex-grow-1">
+    <div class="card-header bg-primary text-white">Chat</div>
+    {% if user.is_authenticated %}
+    <div class="card-header bg-primary text-white"><b>Welcome, {{user.username}}</b> <a href="logout"
+        style="color: white">Logout</a></div>
+    {% else %}
+    <div class="card-header bg-primary text-white"><a href="login" style="color: white">Login</a> <a href="register"
+        style="color: white">Register</a></div>
+    {% endif %}
+    <div class="card-body messages-box">
 
-			<ul class="list-unstyled messages-list">
+      <ul class="list-unstyled messages-list">
 
-				<li class="message received">
-					<div class="message-text">
-						<div class="message-sender">
-							<b>AI Chatbot</b>
-						</div>
-						<div class="message-content">
-							Hi, I am your AI Chatbot, you can ask me anything.
-						</div>
-					</div>
-				</li>
-			</ul>
+        <li class="message received">
+          <div class="message-text">
+            <div class="message-sender">
+              <b>AI Chatbot</b>
+            </div>
+            <div class="message-content">
+              Hi {{user.username}}, I am your AI Chatbot, you can ask me anything.
+            </div>
+          </div>
+        </li>
+      </ul>
 
-		</div>
-		<br><br>
-		<br><br>
-		<br><br>
-	</div>
-	<form class="message-form">
-		{%csrf_token%}
-		<div class="input-group">
-			<input type="text" class="form-control message-input" placeholder="Type your message...">
-			<div class="input-group-append">
-				<button type="submit" class="btn btn-primary btn-send">Send</button>
-			</div>
-		</div>
-	</form>
+    </div>
+    <br><br>
+    <br><br>
+    <br><br>
+  </div>
+  <form class="message-form">
+    {%csrf_token%}
+    <div class="input-group">
+      <input type="text" class="form-control message-input" placeholder="Type your message...">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-primary btn-send">Send</button>
+      </div>
+    </div>
+  </form>
 </div>
 
 <script>
-	const messagesList = document.querySelector('.messages-list');
-	const messageForm = document.querySelector('.message-form');
-	const messageInput = document.querySelector('.message-input');
+  const messagesList = document.querySelector('.messages-list');
+  const messageForm = document.querySelector('.message-form');
+  const messageInput = document.querySelector('.message-input');
 
-	messageForm.addEventListener('submit', (event) => {
-		event.preventDefault(); <!-- prevents page refreshing afer submit -->
+  messageForm.addEventListener('submit', (event) => {
+    event.preventDefault(); <!-- prevents page refreshing afer submit -->
 
-		const message = messageInput.value.trim();
-		if (message.length === 0) {
-			return;
-		}
+    const message = messageInput.value.trim();
+    if (message.length === 0) {
+      return;
+    }
 
-		const messageItem = document.createElement('li');
-		messageItem.classList.add('message', 'sent');
-		messageItem.innerHTML = `
+    const messageItem = document.createElement('li');
+    messageItem.classList.add('message', 'sent');
+    messageItem.innerHTML = `
 		<div class="message-text">
 			<div class="message-sender">
 				<b>You</b>
@@ -125,25 +132,25 @@
 				${message}
 			</div>
 		</div>`;
-		messagesList.appendChild(messageItem);
-		messageInput.value = ''; // when you hit enter the text box clears
+    messagesList.appendChild(messageItem);
+    messageInput.value = ''; // when you hit enter the text box clears
 
-		fetch('', {   // fetch is a func to send msg to BE ie '' homepage
-			method: 'POST',
-			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			body: new URLSearchParams({
-				'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-				'message': message // used in views.py to get the message
-			})
-		})
-			// stores the response in the var response
-			.then(response => response.json()) // convert to json for JS to understand
-			.then(data => {
-				const response = data.response;
-				// creates a new message item so that it pops up in the list
-				const messageItem = document.createElement('li');
-				messageItem.classList.add('message', 'received');
-				messageItem.innerHTML = `
+    fetch('', {   // fetch is a func to send msg to BE ie '' homepage
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        'message': message // used in views.py to get the message
+      })
+    })
+      // stores the response in the var response
+      .then(response => response.json()) // convert to json for JS to understand
+      .then(data => {
+        const response = data.response;
+        // creates a new message item so that it pops up in the list
+        const messageItem = document.createElement('li');
+        messageItem.classList.add('message', 'received');
+        messageItem.innerHTML = `
 				<div class="message-text">
 					<div class="message-sender">
 						<b>AI Chatbot</b>
@@ -152,8 +159,8 @@
 						${response}
 					</div>
 				</div> `;
-				messagesList.appendChild(messageItem); // append it to message item
-			});
-	});
+        messagesList.appendChild(messageItem); // append it to message item
+      });
+  });
 </script>
 {% endblock %}
