@@ -25,6 +25,8 @@ def ask_openai(message):
 
 
 def chatbot(request):
+    # get all the chats from the current logged in user
+    chats = Chat.objects.filter(user=request.user)
     if request.method == 'POST':
         message = request.POST.get('message')
         response = ask_openai(message)
@@ -37,7 +39,7 @@ def chatbot(request):
         )
         chat.save()
         return JsonResponse({'message': message, 'response': response})
-    return render(request, 'chatbot.html')
+    return render(request, 'chatbot.html', {'chats': chats})
 
 
 def login(request):
